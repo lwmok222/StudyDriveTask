@@ -13,6 +13,7 @@ final class ViewController: UIViewController {
     private let consumerButton = UIButton()
     
     let viewModel = ViewModel()
+    private var cellsPerRow:CGFloat = 4
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +26,12 @@ final class ViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         viewModel.invalidateTimers()
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        cellsPerRow = (traitCollection.verticalSizeClass == .compact) ? 4 : 4
+        collectionView.reloadData()
+    }
 
     private func setupViews() {
         collectionView.register(RoundCollectionViewCell.self)
@@ -33,10 +40,6 @@ final class ViewController: UIViewController {
         
         let flowLayout = UICollectionViewFlowLayout()
         flowLayout.scrollDirection = .vertical
-        flowLayout.minimumLineSpacing = 13
-        flowLayout.minimumInteritemSpacing = 5
-        flowLayout.sectionInset = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-        flowLayout.itemSize = CGSize(width: (UIScreen.main.bounds.width - 32 - 32 - 10) / 4, height: 92)
         collectionView.setCollectionViewLayout(flowLayout, animated: true)
        
         view.add(collectionView, producerButton, consumerButton)
@@ -74,7 +77,7 @@ final class ViewController: UIViewController {
     }
 }
 
-extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate {
+extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return viewModel.numberOfItem()
     }
@@ -86,4 +89,23 @@ extension ViewController: UICollectionViewDataSource, UICollectionViewDelegate {
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let cellPadding:CGFloat = 5
+        
+        let widthMinusPadding = UIScreen.main.bounds.width - (cellPadding + cellPadding * cellsPerRow)
+        let width = widthMinusPadding / cellsPerRow
+        return CGSize(width: width, height: width)
+      }
+
+      func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+          return UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
+      }
+
+      func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+          return 13
+      }
+
+      func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+          return 5
+      }
 }

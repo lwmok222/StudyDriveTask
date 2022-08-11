@@ -61,9 +61,7 @@ final class ViewController: UIViewController {
     
     private func setupBindings() {
         viewModel.dataSource.bind { [weak self] cells in
-            if let cells = cells, !cells.isEmpty {
-                self?.collectionView.reloadData()
-            }
+           self?.collectionView.reloadData()
         }
     }
     
